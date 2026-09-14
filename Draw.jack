@@ -1,0 +1,88 @@
+class Draw {
+    function int twoToThe(int n) {
+        var int res, i;
+        let res = 1;
+        let i = 0;
+        while (i < n) {
+            let res = res + res;
+            let i = i + 1;
+        }
+        return res;
+    }
+
+    function void drawPixel(int x, int y, boolean color) {
+        var int addr, mask;
+        let addr = 16384 + (y * 32) + (x / 16);
+        let mask = Draw.twoToThe(x & 15);
+        if (color) {
+            do Memory.poke(addr, Memory.peek(addr) | mask);
+        } else {
+            do Memory.poke(addr, Memory.peek(addr) & (~mask));
+        }
+        return;
+    }
+
+    /** Clears the screen */
+    function void clearScreen() {
+        var int i;
+        let i = 16384;
+        while (i < 24576) {
+            do Memory.poke(i, 0);
+            let i = i + 1;
+        }
+        return;
+    }
+
+    function void drawHLine(int x1, int x2, int y, boolean color) {
+        while (~(x1 > x2)) {
+            do Draw.drawPixel(x1, y, color);
+            let x1 = x1 + 1;
+        }
+        return;
+    }
+
+    function void drawVLine(int x, int y1, int y2, boolean color) {
+        while (~(y1 > y2)) {
+            do Draw.drawPixel(x, y1, color);
+            let y1 = y1 + 1;
+        }
+        return;
+    }
+
+    function void fillRect(int x1, int y1, int x2, int y2, boolean color) {
+        while (~(y1 > y2)) {
+            do Draw.drawHLine(x1, x2, y1, color);
+            let y1 = y1 + 1;
+        }
+        return;
+    }
+
+    function void drawDigit(int d, int x, int y, boolean color) {
+        var Array r;
+        var int i, j, row, mask;
+        let r = Array.new(7);
+        if (d = 1) { let r[0]=4; let r[1]=12; let r[2]=4; let r[3]=4; let r[4]=4; let r[5]=4; let r[6]=14; }
+        if (d = 2) { let r[0]=14; let r[1]=17; let r[2]=1; let r[3]=2; let r[4]=4; let r[5]=8; let r[6]=31; }
+        if (d = 3) { let r[0]=31; let r[1]=2; let r[2]=4; let r[3]=2; let r[4]=1; let r[5]=17; let r[6]=14; }
+        if (d = 4) { let r[0]=2; let r[1]=6; let r[2]=10; let r[3]=18; let r[4]=31; let r[5]=2; let r[6]=2; }
+        if (d = 5) { let r[0]=31; let r[1]=16; let r[2]=30; let r[3]=1; let r[4]=1; let r[5]=17; let r[6]=14; }
+        if (d = 6) { let r[0]=14; let r[1]=16; let r[2]=30; let r[3]=17; let r[4]=17; let r[5]=17; let r[6]=14; }
+        if (d = 7) { let r[0]=31; let r[1]=1; let r[2]=2; let r[3]=4; let r[4]=8; let r[5]=8; let r[6]=8; }
+        if (d = 8) { let r[0]=14; let r[1]=17; let r[2]=17; let r[3]=14; let r[4]=17; let r[5]=17; let r[6]=14; }
+        if (d = 9) { let r[0]=14; let r[1]=17; let r[2]=17; let r[3]=15; let r[4]=1; let r[5]=1; let r[6]=14; }
+        
+        let i = 0;
+        while (i < 7) {
+            let row = r[i];
+            let j = 0;
+            while (j < 5) {
+                let mask = Draw.twoToThe(4 - j);
+                if ((row & mask) = mask) { do Draw.drawPixel(x + j, y + i, color); }
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+        do r.dispose();
+        return;
+    }
+}

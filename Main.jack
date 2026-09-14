@@ -1,0 +1,23 @@
+class Main {
+    function void main() {
+        var SudokuGame game;
+        var int seed;
+        
+        while (true) {
+            do Screen.clearScreen();
+            do Output.moveCursor(10, 16);
+            do Output.printString("SUDOKU: Press any key to start");
+            
+            let seed = 0;
+            while (Keyboard.keyPressed() = 0) {
+                let seed = seed + 1;
+                if (seed > 32760) { let seed = 0; }
+            }
+
+            let game = SudokuGame.new(seed);
+            do game.run();
+            do game.dispose();
+        }
+        return;
+    }
+}
